@@ -7,11 +7,12 @@ import Text.HTML.Scalpel.Core
 import Get
 
 scraper :: Scraper ByteString ByteString
-scraper = attr "href" $ "a" @: [hasClass "d-jpg-hi"]
+scraper = attr "href" $ "a" @: ["title" @= "Download HI-RES JPG"]
 
-getImg :: String -> IO ByteString
+getImg :: String -> IO (Maybe ByteString)
 getImg url = do
+  putStrLn $ "downloading image " ++ url
   img <- scrapeGet url scraper
   case img of
-    Nothing   -> error "unable to scrape image file url"
-    Just img' -> get $ baseUrl ++ (unpack img')
+    Nothing   -> return Nothing
+    Just img' -> fmap Just $ get $ baseUrl ++ (unpack img')
